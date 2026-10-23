@@ -48,8 +48,7 @@ if question:
                 "content": answer
             })
 
-        except Exception:
-            st.error(
-                "Sorry bro! Something went wrong. "
-                "Please try again."
-)
+        except Exception as e:
+    st.error("Sorry bro! Something went wrong.")
+    st.exception(e)
+            
