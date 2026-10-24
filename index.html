@@ -3,146 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#101116">
+  <meta name="theme-color" content="#171821">
   <title>GOD'S PLAN AI</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
+      background: #171821;
+      color: #f5f5f7;
       font-family: Arial, sans-serif;
-      background: #101116;
-      color: #f5f5f5;
       height: 100dvh;
       display: flex;
       flex-direction: column;
     }
 
     header {
-      padding: 18px;
-      border-bottom: 1px solid #292a33;
+      padding: 17px;
       text-align: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 21px;
-    }
-
-    header p {
-      color: #aaa;
-      margin: 7px 0 0;
-      font-size: 13px;
+      background: #20212a;
+      border-bottom: 1px solid #343541;
+      font-weight: bold;
+      letter-spacing: 0.5px;
     }
 
     #chat {
       flex: 1;
       overflow-y: auto;
-      padding: 18px 14px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
 
-    .welcome {
-      text-align: center;
-      margin: auto 0;
-      color: #bbb;
-      line-height: 1.7;
-    }
-
-    .welcome h2 {
-      color: white;
-    }
-
     .message {
-      max-width: 88%;
-      padding: 12px 14px;
+      max-width: 90%;
+      padding: 13px 15px;
       border-radius: 16px;
       line-height: 1.5;
-      white-space: pre-wrap;
       overflow-wrap: anywhere;
+      white-space: pre-wrap;
     }
 
     .user {
       align-self: flex-end;
-      background: #343642;
+      background: #343541;
     }
 
     .assistant {
       align-self: flex-start;
-      background: #1c1d25;
+      background: #232530;
+      border: 1px solid #343541;
     }
 
     .message img {
+      display: block;
       max-width: 100%;
       max-height: 260px;
-      object-fit: contain;
-      display: block;
       border-radius: 10px;
       margin-bottom: 8px;
     }
 
-    #preview {
-      display: none;
-      padding: 8px 14px;
-      align-items: center;
-      gap: 10px;
-      border-top: 1px solid #292a33;
-    }
-
-    #preview img {
-      width: 64px;
-      height: 64px;
-      border-radius: 8px;
-      object-fit: cover;
-    }
-
-    button {
-      border: none;
-      cursor: pointer;
-      color: white;
-      font-size: 19px;
-    }
-
-    #removePhoto {
-      background: #353640;
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
+    #status {
+      min-height: 20px;
+      padding: 0 16px 6px;
+      color: #b5b5c5;
+      font-size: 13px;
     }
 
     #composer {
+      position: relative;
       display: flex;
       align-items: flex-end;
       gap: 8px;
       padding: 12px;
-      padding-bottom: max(12px, env(safe-area-inset-bottom));
-      background: #101116;
-      border-top: 1px solid #292a33;
-    }
-
-    #attachButton,
-    #sendButton {
-      width: 44px;
-      height: 44px;
-      flex-shrink: 0;
-      border-radius: 50%;
-      background: #292a35;
-    }
-
-    #sendButton {
-      background: #7255e8;
+      background: #171821;
+      border-top: 1px solid #343541;
     }
 
     #question {
       flex: 1;
       min-width: 0;
-      resize: none;
       max-height: 120px;
+      resize: none;
       padding: 13px;
       border-radius: 22px;
       border: 1px solid #393a46;
@@ -152,13 +96,23 @@
       font: inherit;
     }
 
-    #question::placeholder {
-      color: #aaa;
+    #question::placeholder { color: #aaa; }
+
+    #composer button {
+      border: 0;
+      cursor: pointer;
+      color: white;
+      font-size: 22px;
+      background: #343541;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
     }
 
-    #fileInput {
-      display: none;
-    }
+    #sendButton { background: #6255d9 !important; }
+
+    #fileInput { display: none; }
 
     #photoMenu {
       display: none;
@@ -170,64 +124,77 @@
       border: 1px solid #444550;
       border-radius: 14px;
       box-shadow: 0 4px 18px #0008;
+      z-index: 5;
     }
 
     #photoMenu button {
       display: block;
       width: 100%;
-      text-align: left;
-      padding: 12px;
       border-radius: 8px;
-      background: transparent;
+      text-align: left;
+      padding: 10px;
       font-size: 15px;
+      height: auto;
     }
 
-    #photoMenu button:hover {
-      background: #393a46;
+    #preview {
+      display: none;
+      padding: 8px 14px;
+      background: #171821;
     }
 
-    #status {
-      color: #b8b8c4;
-      font-size: 13px;
-      padding: 0 16px 8px;
+    #previewImage {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    #removePhoto {
+      margin-left: 8px;
+      border: 0;
+      border-radius: 8px;
+      padding: 8px;
+      color: white;
+      background: #343541;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>🙏 GOD'S PLAN AI</h1>
-    <p>Your personal AI assistant</p>
-  </header>
+  <header>🙏 GOD'S PLAN AI</header>
 
   <main id="chat" aria-live="polite">
-    <div class="welcome" id="welcome">
-      <h2>How can I help you today?</h2>
-      Ask a question or attach a photo 📸
+    <div class="message assistant">
+      Hello bro! 🙏 Welcome to GOD'S PLAN AI. Ask me a question or attach a photo.
     </div>
   </main>
 
-  <div id="status"></div>
+  <div id="status" role="status"></div>
 
   <div id="preview">
-    <img id="previewImage" alt="Selected photo">
-    <span>Photo attached</span>
-    <button id="removePhoto" type="button" aria-label="Remove photo">×</button>
-  </div>
-
-  <div id="photoMenu">
-    <button id="galleryOption" type="button">🖼️ Choose from gallery</button>
-    <button id="cameraOption" type="button">📷 Take a photo</button>
+    <img id="previewImage" alt="Selected photo preview">
+    <button id="removePhoto" type="button">Remove photo ✕</button>
   </div>
 
   <form id="composer">
-    <button id="attachButton" type="button" aria-label="Attach photo">＋</button>
-
     <input
       id="fileInput"
       type="file"
-      accept="image/*"
+      accept="image/jpeg,image/png,image/webp"
     >
+
+    <div id="photoMenu">
+      <button id="galleryOption" type="button">🖼️ Choose from gallery</button>
+      <button id="cameraOption" type="button">📷 Take a photo</button>
+    </div>
+
+    <button id="attachButton" type="button" aria-label="Attach photo">＋</button>
 
     <textarea
       id="question"
@@ -240,6 +207,8 @@
   </form>
 
   <script>
+    const API_URL = "https://god-s-plan-ai.onrender.com/chat";
+
     const chat = document.getElementById("chat");
     const form = document.getElementById("composer");
     const question = document.getElementById("question");
@@ -252,9 +221,46 @@
     const previewImage = document.getElementById("previewImage");
     const removePhoto = document.getElementById("removePhoto");
     const status = document.getElementById("status");
+    const sendButton = document.getElementById("sendButton");
 
     let selectedPhoto = null;
     let selectedPhotoURL = null;
+    let busy = false;
+
+    function addMessage(role, text, imageURL = null) {
+      const message = document.createElement("div");
+      message.className = "message " + role;
+
+      if (imageURL) {
+        const image = document.createElement("img");
+        image.src = imageURL;
+        image.alt = "Attached photo";
+        message.appendChild(image);
+      }
+
+      if (text) {
+        const content = document.createElement("div");
+        content.textContent = text;
+        message.appendChild(content);
+      }
+
+      chat.appendChild(message);
+      chat.scrollTop = chat.scrollHeight;
+
+      return message;
+    }
+
+    function clearPhoto() {
+      if (selectedPhotoURL) {
+        URL.revokeObjectURL(selectedPhotoURL);
+      }
+
+      selectedPhoto = null;
+      selectedPhotoURL = null;
+      fileInput.value = "";
+      previewImage.removeAttribute("src");
+      preview.style.display = "none";
+    }
 
     attachButton.addEventListener("click", () => {
       photoMenu.style.display =
@@ -262,23 +268,24 @@
     });
 
     galleryOption.addEventListener("click", () => {
+      photoMenu.style.display = "none";
       fileInput.removeAttribute("capture");
       fileInput.click();
-      photoMenu.style.display = "none";
     });
 
     cameraOption.addEventListener("click", () => {
+      photoMenu.style.display = "none";
       fileInput.setAttribute("capture", "environment");
       fileInput.click();
-      photoMenu.style.display = "none";
     });
 
     fileInput.addEventListener("change", () => {
       const file = fileInput.files[0];
       if (!file) return;
 
-      if (!file.type.startsWith("image/")) {
-        status.textContent = "Please select an image.";
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        status.textContent = "Please choose a JPG, PNG, or WebP image.";
+        fileInput.value = "";
         return;
       }
 
@@ -288,90 +295,19 @@
         return;
       }
 
+      clearPhoto();
       selectedPhoto = file;
-
-      if (selectedPhotoURL) {
-        URL.revokeObjectURL(selectedPhotoURL);
-      }
-
       selectedPhotoURL = URL.createObjectURL(file);
       previewImage.src = selectedPhotoURL;
-      preview.style.display = "flex";
+      preview.style.display = "block";
       status.textContent = "";
     });
 
-    removePhoto.addEventListener("click", () => {
-      selectedPhoto = null;
-      fileInput.value = "";
-      preview.style.display = "none";
-
-      if (selectedPhotoURL) {
-        URL.revokeObjectURL(selectedPhotoURL);
-        selectedPhotoURL = null;
-      }
-    });
+    removePhoto.addEventListener("click", clearPhoto);
 
     question.addEventListener("input", () => {
       question.style.height = "auto";
       question.style.height = Math.min(question.scrollHeight, 120) + "px";
-    });
-
-    function addMessage(role, text, photoURL = null) {
-      const welcome = document.getElementById("welcome");
-      if (welcome) welcome.remove();
-
-      const bubble = document.createElement("div");
-      bubble.className = "message " + role;
-
-      if (photoURL) {
-        const img = document.createElement("img");
-        img.src = photoURL;
-        img.alt = "Attached photo";
-        bubble.appendChild(img);
-      }
-
-      const textNode = document.createElement("div");
-      textNode.textContent = text;
-      bubble.appendChild(textNode);
-
-      chat.appendChild(bubble);
-      chat.scrollTop = chat.scrollHeight;
-
-      return textNode;
-    }
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      const text = question.value.trim();
-
-      if (!text && !selectedPhoto) {
-        status.textContent = "Type a question or attach a photo first.";
-        return;
-      }
-
-      // This is the frontend demonstration stage.
-      // The secure Gemini backend will be connected next.
-      const photoURL = selectedPhotoURL;
-
-      addMessage("user", text || "Please describe this photo.", photoURL);
-
-      question.value = "";
-      question.style.height = "auto";
-      status.textContent = "";
-
-      selectedPhoto = null;
-      selectedPhotoURL = null;
-      fileInput.value = "";
-      preview.style.display = "none";
-      photoMenu.style.display = "none";
-
-      const reply = addMessage(
-        "assistant",
-        "The chat interface is ready! Gemini connection is the next step."
-      );
-
-      status.textContent = "Frontend demonstration — AI connection not added yet.";
     });
 
     document.addEventListener("click", (event) => {
@@ -382,6 +318,102 @@
         photoMenu.style.display = "none";
       }
     });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      if (busy) return;
+
+      const text = question.value.trim();
+      const photoToSend = selectedPhoto;
+      const photoURL = selectedPhotoURL;
+
+      if (!text && !photoToSend) {
+        status.textContent = "Please enter a question or attach a photo.";
+        return;
+      }
+
+      addMessage("user", text, photoURL);
+
+      question.value = "";
+      question.style.height = "auto";
+      photoMenu.style.display = "none";
+
+      // Keep the selected image available until the request has been sent.
+      selectedPhoto = null;
+      selectedPhotoURL = null;
+      fileInput.value = "";
+      preview.style.display = "none";
+
+      const reply = addMessage("assistant", "");
+      const replyText = document.createElement("div");
+      reply.appendChild(replyText);
+
+      busy = true;
+      sendButton.disabled = true;
+      status.textContent = "Connecting to GOD'S PLAN AI...";
+
+      try {
+        const data = new FormData();
+        data.append("question", text);
+
+        if (photoToSend) {
+          data.append("photo", photoToSend);
+        }
+
+        const response = await fetch(API_URL, {
+          method: "POST",
+          body: data
+        });
+
+        if (!response.ok) {
+          let detail = "Request failed (" + response.status + ").";
+
+          try {
+            const errorData = await response.json();
+            if (errorData.detail) detail = errorData.detail;
+          } catch (_) {}
+
+          throw new Error(detail);
+        }
+
+        if (!response.body) {
+          replyText.textContent = await response.text();
+        } else {
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+
+          while (true) {
+            const result = await reader.read();
+            if (result.done) break;
+
+            replyText.textContent += decoder.decode(result.value, {
+              stream: true
+            });
+
+            chat.scrollTop = chat.scrollHeight;
+          }
+
+          replyText.textContent += decoder.decode();
+        }
+
+        if (!replyText.textContent.trim()) {
+          replyText.textContent = "I didn't receive a response. Please try again.";
+        }
+
+        status.textContent = "";
+      } catch (error) {
+        console.error("Chat request failed:", error);
+        replyText.textContent =
+          "Sorry bro, I couldn't get a reply. " +
+          (error.message || "Please try again.");
+        status.textContent = "Check your internet connection and try again.";
+      } finally {
+        busy = false;
+        sendButton.disabled = false;
+        chat.scrollTop = chat.scrollHeight;
+      }
+    });
   </script>
 </body>
-  </html>
+</html>
