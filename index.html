@@ -458,7 +458,246 @@ gameModal.style.display = "none";
         chat.scrollTop = chat.scrollHeight;
       }
     });
-  </script>
+    
+const runnerCanvas = document.getElementById("runnerCanvas");
+const gameCtx = runnerCanvas.getContext("2d");
+const gameScoreDisplay = document.getElementById("gameScore");
+const startGameButton = document.getElementById("startGame");
+
+let runner = {
+  x: 45,
+  y: 160,
+  width: 24,
+  height: 30,
+  velocityY: 0,
+  grounded: true
+};
+
+let gameRunning = false;
+let gameOver = false;
+let gameScore = 0;
+let gameCoins = 0;
+let gameSpeed = 3;
+let gameFrame = 0;
+let obstacles = [];
+let coins = [];
+let animationId = null;
+
+const groundY = 190;
+const gravity = 0.55;
+const jumpPower = -9.5;
+
+function resetRunnerGame() {
+  if (animationId !== null) {
+    cancelAnimationFrame(animationId);
+  }
+
+  runner = {
+    x: 45,
+    y: groundY - 30,
+    width: 24,
+    height: 30,
+    velocityY: 0,
+    grounded: true
+  };
+
+  gameScore = 0;
+  gameCoins = 0;
+  gameSpeed = 3;
+  gameFrame = 0;
+  obstacles = [];
+  coins = [];
+  gameRunning = true;
+  gameOver = false;
+
+  gameScoreDisplay.textContent = "0";
+  animationId = requestAnimationFrame(runRunnerGame);
+}
+
+function jumpRunner() {
+  if (!gameRunning) {
+    if (gameOver) return;
+    return;
+  }
+
+  if (runner.grounded) {
+    runner.velocityY = jumpPower;
+    runner.grounded = false;
+  }
+}
+
+function drawRunner() {
+  gameCtx.fillStyle = "#101522";
+  gameCtx.fillRect(0, 0, runnerCanvas.width, runnerCanvas.height);
+
+  // Ground
+  gameCtx.fillStyle = "#6265a8";
+  gameCtx.fillRect(0, groundY, runnerCanvas.width,
+    runnerCanvas.height - groundY);
+
+  // Running player
+  gameCtx.fillStyle = "#68e1fd";
+  gameCtx.fillRect(
+    runner.x,
+    runner.y,
+    runner.width,
+    runner.height
+  );
+
+  // Player face
+  gameCtx.fillStyle = "#101522";
+  gameCtx.fillRect(runner.x + 16, runner.y + 6, 4, 4);
+
+  // Obstacles
+  for (const obstacle of obstacles) {
+    gameCtx.fillStyle = "#ff5b66";
+    gameCtx.fillRect(
+      obstacle.x,
+      obstacle.y,
+      obstacle.width,
+      obstacle.height
+    );
+  }
+
+  // Coins
+  for (const coin of coins) {
+    gameCtx.beginPath();
+    gameCtx.arc(coin.x, coin.y, 7, 0, Math.PI * 2);
+    gameCtx.fillStyle = "#ffd447";
+    gameCtx.fill();
+    gameCtx.strokeStyle = "#fff0a0";
+    gameCtx.lineWidth = 2;
+    gameCtx.stroke();
+  }
+
+  gameCtx.fillStyle = "#ffffff";
+  gameCtx.font = "12px Arial";
+  gameCtx.fillText("COINS: " + gameCoins, 10, 18);
+}
+
+function runRunnerGame() {
+  if (!gameRunning) return;
+
+  gameFrame++;
+
+  // Gravity and jumping
+  runner.velocityY += gravity;
+  runner.y += runner.velocityY;
+
+  if (runner.y + runner.height >= groundY) {
+    runner.y = groundY - runner.height;
+    runner.velocityY = 0;
+    runner.grounded = true;
+  }
+
+  // Increase running speed gradually
+  if (gameFrame % 500 === 0) {
+    gameSpeed = Math.min(gameSpeed + 0.3, 7);
+  }
+
+  // Spawn obstacles
+  if (gameFrame % 90 === 0) {
+    obstacles.push({
+      x: runnerCanvas.width,
+      y: groundY - 25,
+      width: 20,
+      height: 25
+    });
+  }
+
+  // Spawn coins
+  if (gameFrame % 65 === 0) {
+    coins.push({
+      x: runnerCanvas.width,
+      y: groundY - 45 - Math.random() * 45,
+      radius: 7
+    });
+  }
+
+  // Move obstacles and detect collisions
+  for (const obstacle of obstacles) {
+    obstacle.x -= gameSpeed;
+
+    const hit =
+      runner.x + runner.width - 4 > obstacle.x &&
+      runner.x + 4 < obstacle.x + obstacle.width &&
+      runner.y + runner.height - 3 > obstacle.y;
+
+    if (hit) {
+      gameRunning = false;
+      gameOver = true;
+    }
+  }
+
+  obstacles = obstacles.filter(
+    obstacle => obstacle.x + obstacle.width > 0
+  );
+
+  // Collect coins
+  for (const coin of coins) {
+    coin.x -= gameSpeed;
+
+    const dx = runner.x + runner.width / 2 - coin.x;
+    const dy = runner.y + runner.height / 2 - coin.y;
+
+    if (Math.sqrt(dx * dx + dy * dy) < 23 && !coin.collected) {
+      coin.collected = true;
+      gameCoins++;
+    }
+  }
+
+  coins = coins.filter(
+    coin => coin.x > -10 && !coin.collected
+  );
+
+  gameScore = Math.floor(gameFrame / 5) + gameCoins * 10;
+  gameScoreDisplay.textContent = gameScore;
+
+  drawRunner();
+
+  if (gameOver) {
+    gameCtx.fillStyle = "#ffffff";
+    gameCtx.textAlign = "center";
+    gameCtx.font = "bold 25px Arial";
+    gameCtx.fillText(
+      "GAME OVER",
+      runnerCanvas.width / 2,
+      85
+    );
+    gameCtx.font = "14px Arial";
+    gameCtx.fillText(
+      "Tap Start / Restart to play again",
+      runnerCanvas.width / 2,
+      110
+    );
+    gameCtx.textAlign = "left";
+    animationId = null;
+    return;
+  }
+
+  animationId = requestAnimationFrame(runRunnerGame);
+}
+
+// Start or restart the game
+startGameButton.addEventListener("click", resetRunnerGame);
+
+// Tap the canvas to jump
+runnerCanvas.addEventListener("pointerdown", jumpRunner);
+
+// Keyboard controls when using a computer
+document.addEventListener("keydown", event => {
+  if (
+    event.code === "Space" &&
+    gameModal.style.display !== "none"
+  ) {
+    event.preventDefault();
+    jumpRunner();
+  }
+});
+
+// Draw the initial screen
+drawRunner();
+      </script>
 <details style="
   padding: 12px 16px;
   background: #20212a;
