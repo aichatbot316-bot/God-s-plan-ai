@@ -242,7 +242,17 @@ height: auto;
 </div>
   <script>
     const API_URL = "https://god-s-plan-ai.onrender.com/chat";
+const gamesButton = document.getElementById("gamesButton");
+const gameModal = document.getElementById("gameModal");
+const closeGame = document.getElementById("closeGame");
 
+gamesButton.addEventListener("click", () => {
+gameModal.style.display = "block";
+});
+
+closeGame.addEventListener("click", () => {
+gameModal.style.display = "none";
+});
     const chat = document.getElementById("chat");
     const form = document.getElementById("composer");
     const question = document.getElementById("question");
