@@ -23,7 +23,7 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 
-MODEL_NAME = "gemini-3.8-flash"
+MODEL_NAME = "gemini-3.1-flash-lite"
 
 # Simple per-process request limit.
 # This is a basic safeguard, not production-grade rate limiting.
