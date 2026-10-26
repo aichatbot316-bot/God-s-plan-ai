@@ -893,7 +893,7 @@ drawRunner();
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setSize(view.clientWidth, view.clientHeight);
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = false;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   view.appendChild(renderer.domElement);
 
