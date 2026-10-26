@@ -230,7 +230,16 @@ height: auto;
 
     <button id="sendButton" type="submit" aria-label="Send message">➤</button>
   </form>
-
+<div id="gameModal" style="display:none; position:fixed; inset:0; z-index:9999; background:#171821; color:white; padding:16px; overflow:auto;">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h2>🏃 God's Plan Runner</h2>
+    <button id="closeGame" type="button" style="padding:10px; background:#343541; color:white; border:0; border-radius:8px;">✕ Close</button>
+  </div>
+  <p>Tap the game to jump over blocks and collect coins! 🪙</p>
+  <p>Score: <strong id="gameScore">0</strong></p>
+  <canvas id="runnerCanvas" width="360" height="220" style="width:100%; max-width:600px; background:#101522; border:2px solid #6255d9; border-radius:12px; touch-action:manipulation;"></canvas>
+  <p><button id="startGame" type="button" style="padding:12px 18px; background:#6255d9; color:white; border:0; border-radius:10px;">▶ Start / Restart</button></p>
+</div>
   <script>
     const API_URL = "https://god-s-plan-ai.onrender.com/chat";
 
