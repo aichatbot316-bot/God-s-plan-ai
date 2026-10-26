@@ -527,53 +527,208 @@ function jumpRunner() {
 }
 
 function drawRunner() {
-  gameCtx.fillStyle = "#101522";
-  gameCtx.fillRect(0, 0, runnerCanvas.width, runnerCanvas.height);
+  const w = runnerCanvas.width;
+  const h = runnerCanvas.height;
 
-  // Ground
-  gameCtx.fillStyle = "#6265a8";
-  gameCtx.fillRect(0, groundY, runnerCanvas.width,
-    runnerCanvas.height - groundY);
+  // 🌌 Night sky
+  const sky = gameCtx.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, "#08091b");
+  sky.addColorStop(0.65, "#22204b");
+  sky.addColorStop(1, "#46305f");
 
-  // Running player
-  gameCtx.fillStyle = "#68e1fd";
-  gameCtx.fillRect(
-    runner.x,
-    runner.y,
-    runner.width,
-    runner.height
-  );
+  gameCtx.fillStyle = sky;
+  gameCtx.fillRect(0, 0, w, h);
 
-  // Player face
-  gameCtx.fillStyle = "#101522";
-  gameCtx.fillRect(runner.x + 16, runner.y + 6, 4, 4);
+  // ✨ Stars
+  for (let i = 0; i < 28; i++) {
+    const sx = (i * 47 + 13) % w;
+    const sy = (i * 29 + 9) % 125;
 
-  // Obstacles
-  for (const obstacle of obstacles) {
-    gameCtx.fillStyle = "#ff5b66";
+    gameCtx.fillStyle = "#dce8ff";
+    gameCtx.fillRect(sx, sy, 2, 2);
+  }
+
+  // 🏙️ Ruined city silhouettes
+  for (let i = 0; i < 8; i++) {
+    const bx = i * 53 - ((gameFrame * 0.25) % 53);
+    const bh = 35 + (i * 17 % 45);
+
+    gameCtx.fillStyle = "#11152b";
+    gameCtx.fillRect(bx, groundY - bh, 38, bh);
+
+    // Broken rooftops
+    gameCtx.fillStyle = "#242747";
+    gameCtx.fillRect(bx + 5, groundY - bh - 5, 12, 5);
+
+    // Glowing windows
+    gameCtx.fillStyle = "#7969b5";
+
+    for (let wy = groundY - bh + 10; wy < groundY - 5; wy += 13) {
+      gameCtx.fillRect(bx + 7, wy, 5, 5);
+      gameCtx.fillRect(bx + 22, wy, 5, 5);
+    }
+  }
+
+  // 🌫️ Distant ground glow
+  gameCtx.fillStyle = "#35345f";
+  gameCtx.fillRect(0, groundY - 3, w, 5);
+
+  // 🛣️ Road
+  gameCtx.fillStyle = "#171927";
+  gameCtx.fillRect(0, groundY, w, h - groundY);
+
+  // Road markings
+  gameCtx.fillStyle = "#7778a6";
+
+  for (let i = 0; i < 7; i++) {
+    const rx = (i * 65 - gameFrame * gameSpeed) % (w + 65);
+
     gameCtx.fillRect(
-      obstacle.x,
-      obstacle.y,
-      obstacle.width,
-      obstacle.height
+      (rx + w + 65) % (w + 65),
+      groundY + 17,
+      24,
+      3
     );
   }
 
-  // Coins
-  for (const coin of coins) {
+  // 🧒 Running boy: hair, head, face, body, arms and legs
+  const px = runner.x;
+  const py = runner.y;
+
+  // Shadow
+  gameCtx.fillStyle = "#080911";
+  gameCtx.beginPath();
+  gameCtx.ellipse(
+    px + runner.width / 2,
+    groundY + 2,
+    19,
+    4,
+    0,
+    0,
+    Math.PI * 2
+  );
+  gameCtx.fill();
+
+  // Legs animate while running
+  const legSwing = gameRunning ? Math.sin(gameFrame * 0.35) * 5 : 0;
+
+  gameCtx.strokeStyle = "#202d63";
+  gameCtx.lineWidth = 5;
+  gameCtx.lineCap = "round";
+
+  gameCtx.beginPath();
+  gameCtx.moveTo(px + 10, py + 23);
+  gameCtx.lineTo(px + 8 + legSwing, py + 30);
+  gameCtx.moveTo(px + 17, py + 23);
+  gameCtx.lineTo(px + 18 - legSwing, py + 30);
+  gameCtx.stroke();
+
+  // Shoes
+  gameCtx.fillStyle = "#f5f5ff";
+  gameCtx.fillRect(px + 3 + legSwing, py + 27, 8, 4);
+  gameCtx.fillRect(px + 15 - legSwing, py + 27, 8, 4);
+
+  // Body / blue jacket
+  gameCtx.fillStyle = "#36b8ee";
+  gameCtx.fillRect(px + 5, py + 11, 16, 14);
+
+  // Jacket detail
+  gameCtx.fillStyle = "#e9f8ff";
+  gameCtx.fillRect(px + 12, py + 13, 2, 10);
+
+  // Arm
+  gameCtx.strokeStyle = "#f1b68b";
+  gameCtx.lineWidth = 4;
+  gameCtx.beginPath();
+  gameCtx.moveTo(px + 7, py + 15);
+  gameCtx.lineTo(px + 2, py + 21);
+  gameCtx.moveTo(px + 20, py + 15);
+  gameCtx.lineTo(px + 24, py + 19);
+  gameCtx.stroke();
+
+  // Head
+  gameCtx.fillStyle = "#f1b68b";
+  gameCtx.fillRect(px + 7, py + 1, 14, 13);
+
+  // Hair
+  gameCtx.fillStyle = "#211b27";
+  gameCtx.fillRect(px + 6, py, 15, 5);
+  gameCtx.fillRect(px + 5, py + 3, 4, 5);
+
+  // Eye
+  gameCtx.fillStyle = "#171525";
+  gameCtx.fillRect(px + 17, py + 6, 2, 2);
+
+  // 🪚 Standing chainsaw obstacles with red body and black teeth
+  for (const obstacle of obstacles) {
+    const ox = obstacle.x;
+    const oy = obstacle.y;
+    const ow = obstacle.width;
+    const oh = obstacle.height;
+
+    // Ground shadow
+    gameCtx.fillStyle = "#080911";
+    gameCtx.fillRect(ox - 4, groundY - 3, ow + 8, 4);
+
+    // Vertical handle
+    gameCtx.strokeStyle = "#a9b0c8";
+    gameCtx.lineWidth = 3;
     gameCtx.beginPath();
-    gameCtx.arc(coin.x, coin.y, 7, 0, Math.PI * 2);
-    gameCtx.fillStyle = "#ffd447";
-    gameCtx.fill();
-    gameCtx.strokeStyle = "#fff0a0";
-    gameCtx.lineWidth = 2;
+    gameCtx.moveTo(ox + ow * 0.7, oy + 7);
+    gameCtx.lineTo(ox + ow * 0.7, oy - 5);
+    gameCtx.lineTo(ox + ow * 0.3, oy - 5);
+    gameCtx.lineTo(ox + ow * 0.3, oy + 4);
     gameCtx.stroke();
+
+    // Chainsaw main red casing
+    gameCtx.fillStyle = "#d9273e";
+    gameCtx.fillRect(ox + ow * 0.2, oy + oh * 0.3, ow * 0.6, oh * 0.7);
+
+    // Dark casing detail
+    gameCtx.fillStyle = "#252632";
+    gameCtx.fillRect(ox + ow * 0.3, oy + oh * 0.4, ow * 0.4, oh * 0.25);
+
+    // Vertical silver blade
+    gameCtx.fillStyle = "#bfc8d9";
+    gameCtx.fillRect(ox + ow * 0.42, oy - oh * 0.35, ow * 0.16, oh * 0.75);
+
+    // Black chain teeth
+    gameCtx.fillStyle = "#171820";
+
+    for (let ty = oy - oh * 0.3; ty < oy + oh * 0.4; ty += 6) {
+      gameCtx.fillRect(ox + ow * 0.28, ty, 4, 3);
+      gameCtx.fillRect(ox + ow * 0.58, ty + 2, 4, 3);
+    }
+
+    // Red warning glow
+    gameCtx.strokeStyle = "#ff465d";
+    gameCtx.lineWidth = 1;
+    gameCtx.strokeRect(ox + ow * 0.2, oy + oh * 0.3, ow * 0.6, oh * 0.7);
   }
 
+  // 🪙 Glowing golden coins
+  for (const coin of coins) {
+    gameCtx.beginPath();
+    gameCtx.arc(coin.x, coin.y, 10, 0, Math.PI * 2);
+    gameCtx.fillStyle = "#ffd447";
+    gameCtx.fill();
+
+    gameCtx.strokeStyle = "#fff2a6";
+    gameCtx.lineWidth = 3;
+    gameCtx.stroke();
+
+    gameCtx.fillStyle = "#8b5c00";
+    gameCtx.font = "bold 12px Arial";
+    gameCtx.textAlign = "center";
+    gameCtx.fillText("$", coin.x, coin.y + 4);
+  }
+
+  // Score display
+  gameCtx.textAlign = "left";
   gameCtx.fillStyle = "#ffffff";
-  gameCtx.font = "12px Arial";
-  gameCtx.fillText("COINS: " + gameCoins, 10, 18);
-}
+  gameCtx.font = "bold 12px Arial";
+  gameCtx.fillText("🪙 " + gameCoins, 10, 18);
+    }
 
 function runRunnerGame() {
   if (!gameRunning) return;
